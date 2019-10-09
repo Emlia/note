@@ -1,0 +1,25 @@
+{
+  "name": "demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Emlia/demo.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Emlia/demo/issues"
+  },
+  "homepage": "https://github.com/Emlia/demo#readme",
+  "devDependencies": {
+    "koa": "^2.8.2",
+    "koa-logger": "^3.2.1",
+    "koa-static": "^5.0.0",
+    "pm2": "^3.5.1"
+  }
+}
