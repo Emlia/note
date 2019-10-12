@@ -7,3 +7,5 @@
 
 ## 文章合集
 [前端工匠](https://github.com/ljianshu/Blog)
+[github](https://github.com/chenxiaochun/blog)
+[web秀](http://www.javanx.cn/?r=y)
