@@ -1,4 +1,4 @@
-# 一些文章
+## 一些文章
 
 [深入理解HTTPS工作原理](https://github.com/ljianshu/Blog/issues/50)
 
@@ -15,3 +15,12 @@
 [web秀](http://www.javanx.cn/?r=y)
 
 [大话WEB开发](https://github.com/SFLAQiu/web-develop)
+
+## 库
+[swiper 中文](https://3.swiper.com.cn/)
+
+[swiper](https://github.com/nolimits4web/swiper)
+
+[typed.js 打字特效](https://mattboldt.com/demos/typed-js/)
+
+
