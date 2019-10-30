@@ -16,6 +16,8 @@
 
 [大话WEB开发](https://github.com/SFLAQiu/web-develop)
 
+[一些面试题](https://github.com/haizlin/fe-interview/blob/master/category/history.md)
+
 ## 库
 [swiper 中文](https://3.swiper.com.cn/)
 
