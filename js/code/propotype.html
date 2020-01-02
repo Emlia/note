@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>https://segmentfault.com/a/1190000018895543</h1>
+    <script>
+      // 每一个构造函数都拥有一个 prototype 属性，这个属性指向一个对象，也就是原型对象
+      // 原型对象默认拥有一个 constructor 属性，指向指向它的那个构造函数
+      // 每个对象都拥有一个隐藏的属性 __proto__，指向它的原型对象
+      const Person = function() {
+        console.log("person");
+      };
+      const p = new Person();
+      console.log("1", Person.prototype === p.__proto__);
+      console.log("2", Person.prototype.constructor === Person);
+      console.log("3", p.constructor === Person);
+      console.log("4", Person.__proto__ === Function.prototype);
+      // 原型链是由原型对象组成，每个对象都有 __proto__ 属性，指向了创建该对象的构造函数的原型，__proto__ 将对象连接起来组成了原型链。是一个用来实现继承和共享属性的有限的对象链。
+      // 属性查找机制: 当查找对象的属性时，如果实例对象自身不存在该属性，则沿着原型链往上一级查找，找到时则输出，不存在时，则继续沿着原型链往上一级查找，直至最顶级的原型对象Object.prototype，如还是没找到，则输出undefined；
+      // 属性修改机制: 只会修改实例对象本身的属性，如果不存在，则进行添加该属性，如果需要修改原型的属性时，则可以用: b.prototype.x = 2；但是这样会造成所有继承于该对象的实例的属性发生改变。
+
+      // 实例可以共享原型上面的属性和方法
+      // 实例自身的属性会屏蔽原型上面的同名属性，实例上面没有的属性会去原型上面找
+
+      // instanceof
+      // 最常用的确定原型指向关系的关键字，检测的是原型,但是只能用来判断两个对象是否属于实例关系， 而不能判断一个对象实例具体属于哪种类型
+
+      // 通过使用 hasOwnProperty 可以确定访问的属性是来自于实例还是原型对象
+    </script>
+  </body>
+</html>
