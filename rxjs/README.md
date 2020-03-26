@@ -1,18 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
+### this is rxjs note
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>observale create</title>
-</head>
-
+- [rxjs](/code/rxjs)
+```html5
 <body>
-  <h1></h1>
-  <script src="https://unpkg.com/rxjs/bundles/rxjs.umd.min.js"></script>
+  <p>Button only responds once within 2s</p>
+  <p id="text">0</p>
+  <button>btn</button>
   <script>
-    // 当我们使用 create() 方法创建 Observable 时，Observable 必须定义如何清理执行的资源。
+    const { fromEvent, pipe } = rxjs
+    const { scan, throttleTime } = rxjs.operators
+    const btn = document.querySelector('button')
+    const text = document.querySelector('#text')
+    fromEvent(btn, 'click')
+      .pipe(throttleTime(2000), scan(count => count + 1, 0))
+      .subscribe((count) => text.innerHTML = count)
+  </script>
+</body>
+```
+- [observale create](/code/rxjs/create/observable-create.html)
+```js
+ // 当我们使用 create() 方法创建 Observable 时，Observable 必须定义如何清理执行的资源。
     // 你可以通过在 function subscribe() 中返回一个自定义的 unsubscribe 函数。
     const { Observable } = rxjs
     const observable = Observable.create(observer => {
@@ -44,8 +51,4 @@
     setTimeout(() => {
       subscription.unsubscribe()
     }, 3000);
-  </script>
-
-</body>
-
-</html>
+```
