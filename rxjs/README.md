@@ -510,3 +510,213 @@
   // ["0:1","1:0"]
   // ["0:1","1:1"]
   ```
+- `switchAll`
+
+  - switch 的含义就是“切换”，总是切换到最新的内部 Observable 对象获取 数据。每当 switch 的上游高阶 Observable 产生一个内部 Observable 对象， switch 都会立刻订阅最新的内部 Observable 对象上，如果已经订阅了之前的 内部 Observable 对象，就会退订那个过时的内部 Observable 对象
+  - !['switchAll'](https://rxjs.dev/assets/images/marble-diagrams/switchAll.png)
+
+  ```js
+  // 每次点击都会取消之前的订阅，订阅一个新的
+  import { fromEvent, interval } from 'rxjs';
+  import { switchAll, map, tap } from 'rxjs/operators';
+  const clicks = fromEvent(document, 'click').pipe(tap(() => console.log('click')));
+  const source = clicks.pipe(map((ev) => interval(1000)));
+  source.pipe(
+    switchAll()
+  ).subscribe(x => console.log(x));
+  /* Output
+  click
+  1
+  2
+  3
+  4
+  ...
+  click
+  1
+  2
+  3
+  ...
+  click
+  ...
+  ```
+
+- `exhaust`,耗尽
+
+  - 在耗尽当前内部 Observable 的数据之前不会切换到下一个内部 Observable 对象
+  - 在消耗当前内部 Observable 期间产生的新 Observale 会被忽略
+  - !['exhaust'](https://rxjs.dev/assets/images/marble-diagrams/exhaust.png)
+
+  ```js
+  // Run a finite timer for each click, only if there is no currently active timer
+  import { fromEvent, interval } from "rxjs";
+  import { exhaust, map, take } from "rxjs/operators";
+
+  const clicks = fromEvent(document, "click");
+  const higherOrder = clicks.pipe(map(ev => interval(1000).pipe(take(5))));
+  const result = higherOrder.pipe(exhaust());
+  result.subscribe(x => console.log(x));
+  ```
+
+- **辅助类操作符**
+- `count`,统计数据个数
+  - count 的作用是统计上游 Observable 对象吐出的所有数据个数
+  - ![''](https://rxjs.dev/assets/images/marble-diagrams/count.png)
+  ```js
+  // Counts how many seconds have passed before the first click happened
+  const seconds = interval(1000);
+  const clicks = fromEvent(document, "click");
+  const secondsBeforeClick = seconds.pipe(takeUntil(clicks));
+  const result = secondsBeforeClick.pipe(count());
+  result.subscribe(x => console.log(x));
+  // Counts how many odd numbers are there between 1 and 7
+  const numbers = range(1, 7);
+  const result = numbers.pipe(count(i => i % 2 === 1));
+  result.subscribe(x => console.log(x));
+  // Results in:
+  // 4
+  ```
+- `max`,`min`
+
+  - max 是取得上游 Observable 吐出所有数据的“最大值”，而 min 是取得“最小值”
+  - !['max'](https://rxjs.dev/assets/images/marble-diagrams/max.png)
+
+  ```ts
+  // Get the maximal value of a series of numbers
+  of(5, 4, 7, 2, 8).pipe(max());
+  // Use a comparer function to get the maximal item
+
+  interface Person {
+    age: number;
+    name: string;
+  }
+  of<Person>(
+    { age: 7, name: "Foo" },
+    { age: 5, name: "Bar" },
+    { age: 9, name: "Beer" }
+  )
+    .pipe(
+      max<Person>((a: Person, b: Person) => (a.age < b.age ? -1 : 1))
+    )
+    .subscribe((x: Person) => console.log(x.name)); // -> 'Beer'
+  ```
+
+- `reduce`,规约统计
+  - 类似 js 中，reduce
+  - !['reduce'](https://rxjs.dev/assets/images/marble-diagrams/reduce.png)
+  ```js
+  // Count the number of click events that happened in 5 seconds
+  const clicksInFiveSeconds = fromEvent(document, "click").pipe(
+    takeUntil(interval(5000))
+  );
+  const ones = clicksInFiveSeconds.pipe(mapTo(1));
+  const count = ones.pipe(reduce((acc, one) => acc + one, 0));
+  count.subscribe(x => console.log(x));
+  ```
+- `every`
+
+  - 上游 Observable 吐出的每一个数据 都会被这个判定函数检验，如果所有数据的判定结果都是 true，那么在上 游 Observable 对象完结的时候，every 产生的新 Observable 对象就会吐出一个 而且是唯一的布尔值 true;反之，只要上游吐出的数据中有一个数据检验 为 false，那么也不用等到上游 Observable 完结，every 产生的 Observable 对象 就会立刻吐出 false。
+
+  ```js
+  import { of } from "rxjs";
+  import { every } from "rxjs/operators";
+
+  of(1, 2, 3, 4, 5, 6)
+    .pipe(every(x => x < 5))
+    .subscribe(x => console.log(x)); // -> false
+  ```
+
+- `find`
+
+  - 找到第一个通过测试的数据
+  - !['find'](https://rxjs.dev/assets/images/marble-diagrams/find.png)
+
+  ```js
+  const clicks = fromEvent(document, "click");
+  const result = clicks.pipe(find(ev => ev.target.tagName === "DIV"));
+  result.subscribe(x => console.log(x));
+  ```
+
+- `findIndex`
+
+  - 找到第一个通过测试的数据的序号
+  - !['findIndex'](https://rxjs.dev/assets/images/marble-diagrams/findIndex.png)
+
+- `isEmpty`
+
+  - 检查一个上游 Observable 对象是不是“空的”
+  - 如果是空的就结束了，吐出 true,如果上游 Observable 推送了数据，则会 吐出 false
+  - 如果上游吐出 error,isEmpty 不会处理，他会继续等待上游推送数据或完成
+  - !['isEmpty'](https://rxjs.dev/assets/images/marble-diagrams/isEmpty.png)
+
+- `defaultIfEmpty`
+
+  - 检测上游 Observable 对象是否为“空的”,接受一个默认值(default)作为参数，如果发现上游 Observable 对象 是“空的”，就把这个默认值吐出来给下游;如果发现上游 Observable 不 是“空的”，就把上游吐出的所有东西原样照搬转交给下游。
+  - !['defaultIfEmpty'](https://rxjs.dev/assets/images/marble-diagrams/defaultIfEmpty.png)
+
+  ```js
+  // If no clicks happen in 5 seconds, then emit "no clicks"
+  import { fromEvent } from "rxjs";
+  import { defaultIfEmpty, takeUntil } from "rxjs/operators";
+
+  const clicks = fromEvent(document, "click");
+  const clicksBeforeFive = clicks.pipe(takeUntil(interval(5000)));
+  const result = clicksBeforeFive.pipe(defaultIfEmpty("no clicks"));
+  result.subscribe(x => console.log(x));
+  ```
+
+- **过滤数据流**
+- `filter`,过滤
+
+  - 使用一个判定函数,过滤掉不符合条件的数据
+  - ![](https://rxjs.dev/assets/images/marble-diagrams/filter.png)
+  - eg: `clicks.pipe(filter(x=>x%2===1));`
+
+- `first`,第一个
+
+  - 如果没判定条件，则返回第一个推送的数据
+  - 如果有判定条件，则返回第一个满足条件的数据
+  - ![](https://rxjs.dev/assets/images/marble-diagrams/first.png)
+
+  ```js
+  // first(predicate,defaultValue)
+  const result = of(1, 2, 3, 4, 5, 6).pipe(first(x => x === 9, 99));
+  result.subscribe(x => console.log(JSON.stringify(x)));
+  ```
+
+- `last`,最后一个
+
+  - ![](https://rxjs.dev/assets/images/marble-diagrams/last.png)
+
+- `take`,拿 n 个
+
+  - Takes the first count values from the source, then completes.
+  - ![](https://rxjs.dev/assets/images/marble-diagrams/take.png)
+
+- `takeLast`,拿最后 n 个
+
+  - 等待上游 Observable 完成后，再取最后 n 个
+  - ![](https://rxjs.dev/assets/images/marble-diagrams/takeLast.png)
+
+- `takeWhile`,
+
+  - Takes values from the source only while they pass the condition given. When the first value does not satisfy, it completes.
+  - ![](https://rxjs.dev/assets/images/marble-diagrams/takeWhile.png)
+
+- `takeUntil`,takeUntil 让我们可以用 Observable 对象来控制另一个 Observable 对象的数据产生
+  - Lets values pass until a second Observable, notifier, emits a value. Then, it completes.
+  - ![](https://rxjs.dev/assets/images/marble-diagrams/takeUntil.png)
+- `skip`
+  - Returns an Observable that skips the first count items emitted by the source Observable.
+  - ![](https://rxjs.dev/assets/images/marble-diagrams/skip.png)
+
+- `skipWhile`
+  - ![](https://rxjs.dev/assets/images/marble-diagrams/skipWhile.png)
+
+- `skipUntil`
+  - ![](https://rxjs.dev/assets/images/marble-diagrams/skipUntil.png)
+
+- `throttleTime`
+  - 我们希望一段时间内爆发的数据只 有一个能够被处理到，这时候就应该使用throttleTime
+
+- `debounceTime`
+  - 只要数据在以很快的速度持续产生 时，那就不去处理它们，直到产生数据的速度降下来
