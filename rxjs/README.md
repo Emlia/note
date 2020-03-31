@@ -706,17 +706,137 @@
   - Lets values pass until a second Observable, notifier, emits a value. Then, it completes.
   - ![](https://rxjs.dev/assets/images/marble-diagrams/takeUntil.png)
 - `skip`
+
   - Returns an Observable that skips the first count items emitted by the source Observable.
   - ![](https://rxjs.dev/assets/images/marble-diagrams/skip.png)
 
 - `skipWhile`
+
   - ![](https://rxjs.dev/assets/images/marble-diagrams/skipWhile.png)
 
 - `skipUntil`
+
   - ![](https://rxjs.dev/assets/images/marble-diagrams/skipUntil.png)
 
 - `throttleTime`
-  - 我们希望一段时间内爆发的数据只 有一个能够被处理到，这时候就应该使用throttleTime
+
+  - 我们希望一段时间内爆发的数据只有一个能够被处理到，这时候就应该使用 throttleTime
+
+- `throttle`
+
+  - 类似 `throttleTime`
+  - 不同的是它不是用时间来控制流量，而是用 Observable 中的数据来控制流 量。
+  - 在 durationSelector 完成或吐出值之前，会抑制新值的吐出
 
 - `debounceTime`
-  - 只要数据在以很快的速度持续产生 时，那就不去处理它们，直到产生数据的速度降下来
+
+  - 只要数据在以很快的速度持续产生时，那就不去处理它们，直到产生数据的速度停止下来，过了指定 ms 后，才会将数据传递到下游
+
+- `debounce`
+  - 类似 `debounceTime`
+  - 不同的是它不是用时间来控制流量，而是用 Observable 中的数据来控制流 量。
+  - 在 durationSelector 完成或吐出值之前，会抑制新值的吐出
+- `auditTime`
+
+  - 吐出静默时间内最后一个值
+  - ![](https://rxjs.dev/assets/images/marble-diagrams/auditTime.png)
+
+- `audit`
+
+  - 类似 `audit`
+  - 不同的是它不是用时间来控制流量，而是用 Observable 中的数据来控制流 量。
+  - 在 durationSelector 完成或吐出值之前，会抑制新值的吐出
+  - ![](https://rxjs.dev/assets/images/marble-diagrams/audit.png)
+
+- `sampleTime`,取样
+
+  - 一段时间内内，最接近的数据
+  - sampleTime 不管上游 source\$产生数据的节奏怎样，完全根 据自己参数指定的毫秒数间隔节奏来给下游传递数据,表面上看 sampleTime 和 auditTime 非常像，auditTime 也会把时间块中最 后一个数据推给下游，但是对于 auditTime 时间块的开始是由上游产生数据 触发的，而 sampleTime 的时间块开始则和上游数据完全无关
+  - sampleTime 的参数是 800，所以，sampleTime 实际上把时间分为 800 毫秒长 度的时间块，sampleTime 会记录每一个时间块上游推下来的最后一个数 据，到了每个时间块结尾，就把这个时间块上游的最后一个数据推给下 游。
+  - 如果 sampleTime 发现一个时间块内上游没有产生数据，那在时 间块结尾也不会给下游传递数据
+  - ![](https://rxjs.dev/assets/images/marble-diagrams/sampleTime.png)
+
+- `sample`
+  - 只有 当参数 notifer\$产生一个数据的时候，sample 就会从上次产生数据到现在的 时间段里提取最后一个数据传给下游
+  - ![](https://rxjs.dev/assets/images/marble-diagrams/sample.png)
+  ```js
+  // On every click, sample the most recent "seconds" timer
+  const seconds = interval(1000);
+  const clicks = fromEvent(document, "click");
+  const result = seconds.pipe(sample(clicks));
+  result.subscribe(x => console.log(x));
+  ```
+- `distinct`
+
+  - 只返回从没 出现过的数据，上游同样的数据只有第一次产生时会传给下游，其余的都 被舍弃掉了。
+  - `distinct（keySelector，flushes）`
+  - 如果上游产生的不同数据很 多，那么可能会造成内存泄露
+
+  ```js
+  // 根据 === 判断是否相同
+  distinct();
+  // 根据 name 字段比对
+  distinct((p: Person) => p.name);
+  // 每1000ms 清空一下 内部的HashSet
+  distinct(v => v.id, interval(1000));
+  ```
+
+- `distinctUntilChanged`
+
+  - 只和上一个数据进行比较
+
+- `ignoreElments`
+
+  - 忽略所有的元素
+  - ![](https://rxjs.dev/assets/images/marble-diagrams/ignoreElements.png)
+
+- `elementAt`
+
+  - 返回特定下标的数据
+  - ![](https://rxjs.dev/assets/images/marble-diagrams/elementAt.png)
+
+- `single`
+  - single 这个操作符用来检查上游是否只有一个满足对应条件的数据，如 果答案为“是”，就向下游传递这个数据;如果答案为“否”，就向下游传递一个异常。
+  - ![](https://rxjs.dev/assets/images/marble-diagrams/single.png)
+
+* **转化数据流**
+
+- `map`,将每个元素用映射函数产生新的数据
+- `mapTo`,将数据流中的每一个数据转换成同一个数据
+- `pluck`,取出一个对象中的一个字段
+
+  - ![](https://rxjs.dev/assets/images/marble-diagrams/pluck.png)
+
+- 将上游数据放在数组中 传给下游的操作符都包含 buffer 这个词
+
+- `bufferTime`
+
+  - 将一段时间内的上游数据 放到数组中
+  - 如果没有数据，会发送空数组
+  - ![](https://rxjs.dev/assets/images/marble-diagrams/bufferTime.png)
+
+- `bufferCount`
+
+  - `bufferCount(bufferSize,startBufferEvery)`
+  - bufferSize:缓冲区的最大容量
+  - startBufferEvery:何时开启下一个缓冲区
+  - ![](https://rxjs.dev/assets/images/marble-diagrams/bufferCount.png)
+
+- `bufferWhen`
+
+  - 收集过去的值作为数组。当开始收集值时，它调用一个函数，该函数返回一个 Observable，告诉何时关闭缓冲区并重新开始收集
+  - ![](https://rxjs.dev/assets/images/marble-diagrams/bufferWhen.png)
+
+- `bufferToggle`
+
+  - 定义开始和结束的 Observable
+  - ![](https://rxjs.dev/assets/images/marble-diagrams/bufferToggle.png)
+
+- `buffer`
+
+  - 数据会积累，直到 Observable 会发出值
+  - ![](https://rxjs.dev/assets/images/marble-diagrams/buffer.png)
+
+- 所有 xxxxMap 名称模式的操作符，都是一个 map 加上一个“砸平”操作的 组合
+
+- `concatMap`
