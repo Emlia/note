@@ -838,5 +838,32 @@
   - ![](https://rxjs.dev/assets/images/marble-diagrams/buffer.png)
 
 - 所有 xxxxMap 名称模式的操作符，都是一个 map 加上一个“砸平”操作的 组合
+- xxxxMap 是,map 产生的是一个高阶 Observable 对象,然后再展平
+- concatMap = map + concatAll
+- mergeMap = map + mergeAll
+- switchMap = map + switch
+- exhaustMap = map + exhaust
 
 - `concatMap`
+  - 内部的第二个 Observable 要等到第一个 Observable 完结才能上场
+  - ![](https://rxjs.dev/assets/images/marble-diagrams/concatMap.png)
+- `mergeMap`
+  - 只要内部 Observable 推送数据，就会立即 推送到下游
+  - ![](https://rxjs.dev/assets/images/marble-diagrams/mergeMap.png)
+- `switchMap`
+  - 只要有新的内部 Observable 对象产生，就立刻退订之前的内部 Observable 对象，改为从最新的内部 Observable 对象拿数据
+  - ![](https://rxjs.dev/assets/images/marble-diagrams/switchMap.png)
+- `exhaustMap`
+  - exhaustMap 对数据的处理策略和 switchMap 正好相反，先产生的内部 Observable 优先级总是更高，后产生的内部 Observable 对象被利用的唯一机 会，就是之前的内部 Observable 对象已经完结
+
+- `expand`
+  - 类似于mergeMap
+  - 所有expand传递给下游的数据，同时也会传递给自己, 作为上游传来的数据
+  - ![](https://rxjs.dev/assets/images/marble-diagrams/expand.png)
+
+- `scan`
+  - like reduce,累计上游传来的值,reduce 是上游完结后再输出，scan 是上游每次推送 都会输出一个值
+  - ![](https://rxjs.dev/assets/images/marble-diagrams/scan.png)
+
+- `mergeScan`
+  - mergeScan类似于scan，不过规约函数返回的是Observable对象而不是 一个数据
