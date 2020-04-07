@@ -1,5 +1,10 @@
 # git 基础命令
 
+- **git 配置**
+
+  - `git config --list [--global]`,显示 git 配置
+  - `git config -e [--global]`,编辑 git 配置
+
 - **设置姓名和邮箱地址**
 
   - `git config --global user.name "Firstname Lastname"`
@@ -26,7 +31,7 @@
 
 - **向暂存区中添加文件**
 
-  - `git add`
+  - `git add [file1] [file2] ...`
   - 暂存区是提交之前的一个临时区域
 
 - **保存仓库的历史记录**
@@ -43,20 +48,41 @@
   - 可以加上 `-p` 参数，文件的前后差 别就会显示在提交信息之后。`git log -p`
   - `--graph` , 以图表形式查看分支
   - `git reflog`命令，查看当前仓库的操作日志
+  - `git log -S [keyword]`,搜索提交历史，根据关键词
 
 - **查看更改前后的差别**
 
-  - `git diff`,查看当前工作树与暂存区的差别
-  - `git diff HEAD`,查看工作树和最新提交的差别,这里的 HEAD 是指向当前分支中最新一次提交 的指针。
+  - `git diff`,查看当前工作区与暂存区的差别,如果暂存区为空，则比较的是工作区和归档区的最新提交
+  - `git diff HEAD`,查看工作区和和归档区的最新提交的差别,这里的 HEAD 是指向当前分支中最新一次提交 的指针。
+  - `git diff HEAD^`,工作区 <==> 归档区的倒数第二次提交
+  - `git diff --cached`,比较暂存区和版本库差异
+  - `git diff <commit-id> <commit-id>`,比较两次提交之间的差异
+  - `git diff commit-id`,比较工作区与指定 commit-id 的差异
+  - `git diff --cached [<commit-id>]`,比较暂存区与指定 commit-id 的差异
 
 - **显示分支一览表**
 
-  - `git branch`
+  - `git branch`,列出所有本地分支
+  - `git branch -r`,列出所有远程分支
+  - `git branch -a`,列出所有本地分支和远程分支
+  - `git branch -m dev app`,修改分支的名字
+
+- **创建分支**
+
+  - `git branch [branch-name]`,但依然停留在当前分支
+  - `git branch [branch] [commit]`,新建一个分支，指向指定 commit
+  - `git checkout -b [new branch name]`, 创建新的分支名字，然后再切换分支
+  - `git branch --track [branch] [remote-branch]`,新建一个分支，与指定的远程分支建立追踪关系
+  - `git branch --set-upstream [branch] [remote-branch]`,建立追踪关系，在现有分支与指定的远程分支之间
+
+- **删除分支**
+
+  - `git branch -d [branch name]`
+  - `git push origin --delete dev2`,删除远程 `origin` 名为 `dev2` 的分支
 
 - **切换分支**
 
   - `git checkout [branch name]`, 切换 `branch`,`tag`
-  - `git checkout -b [new branch name]`, 创建新的分支名字，然后再切换分支
   - `git checkout -`, 切换回上一个分支
 
 - **合并分支**
@@ -68,9 +94,15 @@
   5. 然后合并 `feature-A` 分支
   6. `git merge feature-A`
 
+  - `git cherry-pick [commit]`,选择一个 commit，合并进当前分支
+
 - **回溯历史版本**
 
-  - `git rest --hard [commit hash]` , 让仓库的 HEAD、暂存区、当前工作树回溯到指定状态
+  - `git reset [ –-soft | –-mixed | –-hard] commit-id`
+  - `git reset commit-id` 的意思就是 把 `HEAD` 移到 `commit-id`
+  - `--soft`,只回溯 `归档区` 到指定 `commit-id`
+  - `--mixed`,默认，回溯`归档区`,`暂存区`到指定 `commit-id`
+  - `--hard` , 让仓库的 `归档区`、`暂存区`、`工作区`回溯到指定状态
 
 - **压缩历史**
 
@@ -86,7 +118,7 @@
   7. git commit -am "Fix typo"
   8. 更改历史
   9. 在历史记录中合并为一次完美的提交
-  10. git rebase -i HEAD~2
+  10. `git rebase -i HEAD~2`
   11. `pick 7a34294 Add feature-C pick 6fba227 Fix typo`
   12. 我们将 6fba227 的 Fix typo 的历史记录压缩到 7a34294 的 Add feature-C 里
   13. 将 6fba227 左侧的 pick 部分删除，改写为 fixup。
@@ -103,6 +135,20 @@
 - **推送至远程仓库**
   - `git push origin master`
   - `-u` 参数可以在推送的同时，将 origin 仓库的 master 分 支设置为本地仓库当前分支的 upstream(上游)。添加了这个参数，将来 运行 git pull 命令从远程仓库获取内容时，本地仓库的这个分支就可 以直接从 origin 的 master 分支获取内容，省去了另外添加参数的麻烦
+- **删除远程分支**
+
+  - `git branch -dr [remote/branch]`
+  - `git push origin --delete dev2`,删除远程 `origin` 名为 `dev2` 的分支
+
+- **标签**
+  - `git tag`,列出所有 tag
+  - `git tag [tag]`,新建一个 tag 在当前 commit
+  - `git tag [tag] [commit]`, 新建一个 tag 在指定 commit
+  - `git tag -d [tag]`,删除本地 tag
+  - `git push origin :refs/tags/[tagName]`,删除远程 tag
+  - `git push [remote] [tag]`,提交指定 tag
+  - `git push [remote] --tags`,提交所有 tag
+  - `git checkout -b [branch] [tag]`,新建一个分支，指向某个 tag
 
 ```
 git init
