@@ -44,6 +44,7 @@
     console.log(1);
     resolve(2);
     console.log(3);
+    // 状态改变之后，promise 的状态就凝固了
     reject(4);
     console.log(5);
     resolve(6);
@@ -54,6 +55,31 @@
       console.log("err-" + err);
     });
   // 1 3 5 7 2
+  ```
+
+  ```js
+  const p = new Promise((resolve, reject) => {
+    const date = new Date().getTime();
+    resolve(date);
+  });
+  // then 可以多次调用，但是 promise 内部状态一经改变，不会改变
+  p.then((data) => {
+    const date = new Date().getTime();
+    console.log(data, date);
+  });
+  // 两次获得的data是一致的，调用的时间是不同的
+  const p2 = p.then((data) => {
+    const date = new Date().getTime();
+    console.log(data, date);
+  });
+  p2.then((data) => {
+    console.log(data);
+    console.log(p2 === p); // 每次产生的是一个新的promise
+  });
+  // 1586438193893 1586438193893
+  // 1586438193893 1586438193900
+  // undefined
+  // false
   ```
 
 - `Promise.resolve` 直接发送一个成功的值
@@ -98,6 +124,24 @@
   // error: 1
   ```
 
+- `.catch`就是`.then`的变形,相当于产生了一个新的 `Promise` 对象，调用她的 `then` 方法
+
+  ```js
+  // .catch 相当于 以下代码
+  Promise.prototype.catch = function (onRejected) {
+    return this.then(null, onRejected);
+  };
+  ```
+
+  ```js
+  Promise.resolve("abc")
+    // .then(null,data=>console.log('1 : ',data))
+    // 发生穿透
+    .catch((data) => console.log("1 : ", data))
+    .then((data) => console.log("2 : ", data));
+  // 2 : abc
+  ```
+
 - `then`的第二个参数不能捕获，第一个参数中出现的错误,但是该 `then` 之后的 `catch` 可以捕获
 
   ```js
@@ -129,7 +173,7 @@
   // zoe
   ```
 
-- 如果 `then` 接受的函数必须要返回一个新的 `Promise`
+- 如果 `.then`, `.catch` 接受一个函数，`.then()`, `.catch()`的结果必须是一个新的 `Promise` 对象
 
   1. 如果返回的是一个 `Promise` 实例,则直接返回该对象，并采用其状态
   2. 如果返回的是一个 `thenable`的`object`或`function`,认为它是一个`Promise`对象
@@ -167,6 +211,8 @@ Promise.resolve("123")
 ```
 
 - `.then` 或者 `.catch` 的参数期望是函数，传入非函数则会发生值穿透
+
+  - 如果传入参数不是函数，相当于 传入一个函数 `(data)=>data`
 
   ```js
   Promise.resolve("abc")
