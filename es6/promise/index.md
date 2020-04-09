@@ -1,4 +1,4 @@
-# Promise
+# [Promises/A+](https://promisesaplus.com/#notes)
 
 - 新建一个`promise`
 
@@ -129,14 +129,42 @@
   // zoe
   ```
 
-- 如果 `then` 接受的函数有返回值,如果期间没有出错, 则会将返回值重新 `resolve` 成一个新的 `Promise` 对象(注意，不是原来那个 `Promise` 实例）,如果出错，`reject` 成一个 新的 `Promise` 对象.如果没有返回值,`resolve` 一个值为 `undefined` 的 `Promise` 实例
+- 如果 `then` 接受的函数必须要返回一个新的 `Promise`
 
-  ```js
-  Promise.resolve("abc")
-    .then((data) => "edf")
-    .then((data) => console.log(data));
-  // efg
-  ```
+  1. 如果返回的是一个 `Promise` 实例,则直接返回该对象，并采用其状态
+  2. 如果返回的是一个 `thenable`的`object`或`function`,认为它是一个`Promise`对象
+  3. 如果返回的是 `string`,`bool`,`number`,`undefined`,`null`,一般的`object`,则会将返回值重新 `resolve` 成一个新的 `Promise` 对象,没写 `return` 相当于 `return undefined`
+  4. 如果期间出错，则会将出错信息`reject` 成一个 新的 `Promise` 对象
+
+```js
+// 返回 promise 对象
+Promise.resolve("123")
+  .then(() => {
+    return new Promise((resolve, reject) => {
+      resolve("789");
+    });
+  })
+  .then(console.log);
+// 789
+
+// 直接返回值
+Promise.resolve("abc")
+  .then((data) => "edf")
+  .then((data) => console.log(data));
+// efg
+
+// 返回值是 thenable 的 function 或 object,就认为他是一个 promise 对象
+Promise.resolve("123")
+  .then(() => {
+    const temp = () => {};
+    temp.then = (resolve, reject) => {
+      resolve("456");
+    };
+    return temp;
+  })
+  .then(console.log);
+// 456
+```
 
 - `.then` 或者 `.catch` 的参数期望是函数，传入非函数则会发生值穿透
 
