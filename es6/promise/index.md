@@ -277,3 +277,45 @@ Promise.resolve("123")
   //   { status: 'fulfilled', value: '789' }
   // ]
   ```
+
+- 异步 1+2+3+4+5
+
+  ```js
+  // callback 形式， 回调地狱
+  add(1, 2, (result) => {
+    add(result, 3, (result) => {
+      add(result, 4, (result) => {
+        add(result, 5, (result) => {
+          console.log(result);
+        });
+      });
+    });
+  });
+
+  function add(a, b, callback) {
+    setTimeout(() => {
+      const result = a + b;
+      callback(result);
+    }, 300);
+  }
+
+  // 15
+  ```
+
+  ```js
+  // 使用 promise
+  add(1, 2)
+    .then((data) => add(data, 3))
+    .then((data) => add(data, 4))
+    .then((data) => add(data, 5))
+    .then(console.log);
+
+  function add(a, b) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve(a + b);
+      }, 300);
+    });
+  }
+  // 15
+  ```
