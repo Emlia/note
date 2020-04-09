@@ -104,14 +104,14 @@
   Promise.resolve("abc")
     .then(
       (data) => {
-        throw Error("this is a error");
+        throw Error("this is an error");
       },
       (error) => {
         console.log("error 1 : ", error.message);
       }
     )
     .catch((error) => console.log("error 2 : ", error.message));
-  // error 2 :  this is a error
+  // error 2 :  this is an error
   ```
 
 - 将 `setTimeout` 包装成 `Promise`
@@ -149,9 +149,9 @@ Promise.resolve("123")
 
 // 直接返回值
 Promise.resolve("abc")
-  .then((data) => "edf")
+  .then((data) => "def")
   .then((data) => console.log(data));
-// efg
+// def
 
 // 返回值是 thenable 的 function 或 object,就认为他是一个 promise 对象
 Promise.resolve("123")
