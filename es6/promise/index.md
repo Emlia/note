@@ -319,3 +319,23 @@ Promise.resolve("123")
   }
   // 15
   ```
+
+  ```js
+  // 使用 async await
+  (async () => {
+    const one = await add(1, 2);
+    const two = await add(one, 3);
+    const three = await add(two, 4);
+    const result = await add(three, 5);
+    console.log(result);
+  })();
+
+  function add(a, b) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve(a + b);
+      }, 300);
+    });
+  }
+  // 15
+  ```
