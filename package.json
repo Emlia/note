@@ -16,7 +16,9 @@
     "url": "https://github.com/Emlia/note/issues"
   },
   "homepage": "https://github.com/Emlia/note#readme",
-  "devDependencies": {},
+  "devDependencies": {
+    "node-sass": "^4.13.1"
+  },
   "dependencies": {
     "koa": "^2.11.0",
     "koa-logger": "^3.2.1",

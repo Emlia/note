@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      console.log("abc");
+      const en = "abc";
+      console.log("en: %s", en);
+      const style =
+        "background-color:green;color:white;padding: 2px 4px;border-radius:4px;";
+      console.log("%cvue", style);
+      //
+      console.warn("this is warning msg");
+      //
+      console.table([
+        { name: "emlia", age: 18 },
+        { name: "zoe", age: 8 },
+      ]);
+      //
+      console.group("group1");
+      console.log(1);
+      console.warn(2);
+      console.error(3);
+      console.groupEnd();
+      //
+      console.assert(1 === 1, "断言成功");
+      console.assert(1 === 2, "1 !== 2");
+      //
+      console.time("loop-100");
+      for (let i = 0; i < 100; i++) {}
+      console.timeEnd("loop-100");
+    </script>
+  </body>
+</html>
