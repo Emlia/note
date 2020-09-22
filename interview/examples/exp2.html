@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>async</title>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        console.log("DOMContentLoaded");
+      });
+      window.addEventListener("load", function () {
+        console.log("load");
+      });
+    </script>
+    <script async src="exp2-1.js"></script>
+    <script async src="exp2-2.js"></script>
+    <script async src="exp2-3.js"></script>
+  </head>
+  <body>
+    <script>
+      console.log("srcipt in body");
+    </script>
+  </body>
+</html>

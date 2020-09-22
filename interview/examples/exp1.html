@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>defer</title>
+    <script>
+      // DOMContentLoaded
+      document.addEventListener("DOMContentLoaded", function () {
+        console.log("DOMContentLoaded");
+      });
+      window.addEventListener("load", function () {
+        console.log("load");
+      });
+    </script>
+    <script defer src="exp1-1.js"></script>
+    <script defer src="exp1-2.js"></script>
+  </head>
+  <body>
+    <script>
+      console.log("srcipt in body");
+    </script>
+  </body>
+</html>
