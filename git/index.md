@@ -1,4 +1,70 @@
-# git 基础命令
+# GIT
+
+- 一个基本的`git`仓库分为 : `working directory`(工作区)、`staging area`(暂存区)、`git directory`(归档区)
+
+![git area](http://git.oschina.net/progit/figures/18333fig0106-tn.png)
+
+- 基本的`git`工作流程是
+
+  1. 在工作区修改文件
+  2. 将想要提交的代码添加到暂存区,`git add [filename]`
+  3. 将暂存区所有的文件提交到归档区，形成一次提交,`git commit -m 'some commit message'`
+
+- **创建一个本地的`git`仓库**
+
+  1. 自己创建一个新的仓库,`git init`,会在当前目录下生成一个`.git`目录，有这个目录代表这是一个`git`仓库
+  2. 从远程拷贝一个仓库, `git clone [remote url]`,完成后也有`.git`目录
+
+- **检查当前文件状态**
+  - `git status`,查看当前文件状态
+
+![file status](http://git.oschina.net/progit/figures/18333fig0201-tn.png)
+
+- **向暂存区中添加文件**
+
+  1. `git add [filename]`,添加一个文件
+  2. `git add [file1] [file2] ...`,添加多个文件
+  3. `git add [directory path]`,将该目录下的文件都添加到暂存区
+
+- **提交文件到归档区**
+
+  - `git commit -m 'first commit'`
+  - `-m` 参数后的 "first commit"称作提交信息，是对这个提交的概述。
+  - 直接执行命令`git commit`,执行后编辑器就会启动
+  - `-a`, git 就会自动把所有已经跟踪过的文件暂存起来一并提交
+
+- **查看分支**
+
+  - `git branch`,列出所有本地分支
+  - `git branch -r`,列出所有远程分支
+  - `git branch -a`,列出所有本地分支和远程分支
+  - `git branch -m [old branch name] [new branch name]`,修改分支的名字
+
+- **创建分支**
+
+  - `git branch [new branch name]`,基于当前分支创建一个新的分支,但依然停留在当前分支
+  - `git branch [new branch name] [existed branch | commit id]`,基于原有分支或一个`commit id`创建一个新的分支,但依然停留在当前分支。注:分支名和`commit id` 并没有本质区别，只是某些`commit id` 有了名字
+  - `git checkout -b [new branch name]`, 基于当前分支，创建新的分支名字，然后再切换到新的分支
+  - `git branch --track [new branch name] [remote branch name]`,新建一个分支，与指定的远程分支建立追踪关系,`git branch -t abc origin/dev`
+
+- **删除分支**
+
+  - `git branch -D [branch name]`,删除本地分支
+  - `git push origin -d dev`,删除远程 `origin` 名为 `dev` 的分支
+  - `git push origin :dev2`,删除远程 `origin` 名为 `dev2` 的分支
+
+- **切换分支**
+
+  - `git checkout [branch name]`, 切换 `branch`,`tag`
+  - `git checkout -`, 切换回上一个分支
+
+- **回溯历史版本**
+
+  - `git reset [ –-soft | –-mixed | –-hard] commit-id`
+  - `git reset [commit id]` 的意思就是 把 `HEAD` 移到 `commit id`
+  - `--soft`,只回溯 `归档区`到指定 `commit-id`,`暂存区`,`工作区`不变
+  - `--mixed`,默认，回溯`归档区`,`暂存区`到指定 `commit-id`,`工作区`不变
+  - `--hard` , 让仓库的 `归档区`、`暂存区`、`工作区`都回溯到指定状态
 
 - **git 配置**
 
@@ -21,26 +87,6 @@
   - `ssh-keygen -t rsa -C "your_email@example.com"`
   - `id_rsa` 文件是私有密钥，`id_rsa.pub` 是公开密钥
 
-- **初始化仓库**
-
-  - `git init`
-
-- **查看仓库的状态**
-
-  - `git status`
-
-- **向暂存区中添加文件**
-
-  - `git add [file1] [file2] ...`
-  - 暂存区是提交之前的一个临时区域
-
-- **保存仓库的历史记录**
-
-  - `git commit -m 'first commit'`
-  - `-m` 参数后的 "first commit"称作提交信息，是对这个提交的 概述。
-  - 直接执行命令`git commit`,执行后编辑器就会启动
-  - `-a`, git 就会自动把所有已经跟踪过的文件暂存起来一并提交
-
 - **查看提交日志**
 
   - `git log`
@@ -60,31 +106,6 @@
   - `git diff commit-id`,比较工作区与指定 commit-id 的差异
   - `git diff --cached [<commit-id>]`,比较暂存区与指定 commit-id 的差异
 
-- **显示分支一览表**
-
-  - `git branch`,列出所有本地分支
-  - `git branch -r`,列出所有远程分支
-  - `git branch -a`,列出所有本地分支和远程分支
-  - `git branch -m dev app`,修改分支的名字
-
-- **创建分支**
-
-  - `git branch [branch-name]`,但依然停留在当前分支
-  - `git branch [branch] [commit]`,新建一个分支，指向指定 commit
-  - `git checkout -b [new branch name]`, 创建新的分支名字，然后再切换分支
-  - `git branch --track [branch] [remote-branch]`,新建一个分支，与指定的远程分支建立追踪关系
-  - `git branch --set-upstream [branch] [remote-branch]`,建立追踪关系，在现有分支与指定的远程分支之间
-
-- **删除分支**
-
-  - `git branch -d [branch name]`
-  - `git push origin --delete dev2`,删除远程 `origin` 名为 `dev2` 的分支
-
-- **切换分支**
-
-  - `git checkout [branch name]`, 切换 `branch`,`tag`
-  - `git checkout -`, 切换回上一个分支
-
 - **合并分支**
 
   1. 假设 `feature-A` 已经实现完毕
@@ -95,14 +116,6 @@
   6. `git merge feature-A`
 
   - `git cherry-pick [commit]`,选择一个 commit，合并进当前分支
-
-- **回溯历史版本**
-
-  - `git reset [ –-soft | –-mixed | –-hard] commit-id`
-  - `git reset commit-id` 的意思就是 把 `HEAD` 移到 `commit-id`
-  - `--soft`,只回溯 `归档区` 到指定 `commit-id`
-  - `--mixed`,默认，回溯`归档区`,`暂存区`到指定 `commit-id`
-  - `--hard` , 让仓库的 `归档区`、`暂存区`、`工作区`回溯到指定状态
 
 - **压缩历史**
 
